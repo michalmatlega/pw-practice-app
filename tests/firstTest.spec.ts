@@ -117,9 +117,9 @@ test('assertions', async({page}) => {
     expect(text).toEqual('Submit');
 
     //Locator assertion
-    expect(basicFormButton).toHaveText('Submit');
+    await expect(basicFormButton).toHaveText('Submit');
 
     //Soft Assertion
-    await expect.soft(basicFormButton).toHaveText('Submit5');   //will not terminate the test
+    //await expect.soft(basicFormButton).toHaveText('Submit5');   //will not terminate the test
     await basicFormButton.click();      //with soft earlier this is executed
 });

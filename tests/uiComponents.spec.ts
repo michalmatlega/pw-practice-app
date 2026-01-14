@@ -135,4 +135,68 @@ test('web tables', async({page}) => {
   await page.locator('input-editor').getByPlaceholder('E-mail').fill('test@test.com');
   await editButton.click();
   await expect(targetRowById.locator('td').nth(5)).toHaveText('test@test.com');
+
+  //3 test filter of the table
+
+  const ages = ["20", "30", "40", "200"];
+
+  for(let age of ages) {
+    await page.locator('input-filter').getByPlaceholder('Age').clear();
+    await page.locator('input-filter').getByPlaceholder('Age').fill(age);
+    await page.waitForTimeout(500);
+    const ageRows = page.locator('tbody tr');
+
+    for(let row of await ageRows.all()) {
+      const cellValue = await row.locator('td').last().textContent();
+
+      if(age === '200') {
+        expect(await page.getByRole('table').textContent()).toContain('No data found');
+      } else {
+        expect(cellValue).toEqual(age);
+      }
+    }
+  }
 })
+
+test('datepicker', async({page}) => {
+  await page.getByText('Forms').click();
+  await page.getByText('Datepicker').click();
+
+  const calendarInputField = page.getByPlaceholder('Form Picker');
+  await calendarInputField.click();
+
+  await page.locator('.day-cell.ng-star-inserted').getByText('1', {exact: true}).click();
+  //await page.locator('[class="day-cell ng-star-inserted"]').getByText('1', {exact: true}).click();
+  await expect(calendarInputField).toHaveValue('Jan 1, 2026');
+});
+
+test('datepicker any day in future', async({page}) => {
+  await page.getByText('Forms').click();
+  await page.getByText('Datepicker').click();
+
+  const calendarInputField = page.getByPlaceholder('Form Picker');
+  await calendarInputField.click();
+
+  let targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + 199);
+  const targetMonthNameLong = targetDate.toLocaleString('default', {month: 'long'});
+  const targetYear = targetDate.toLocaleString('default', {year: 'numeric'});
+  const targetDay = targetDate.toLocaleString('default', {day: 'numeric'});
+
+  const targetDateInSelector = ` ${targetMonthNameLong} ${targetYear} `;
+
+  const targetMonthNameShort = targetDate.toLocaleString('default', {month: 'short'});
+  const targetDateToAssert = `${targetMonthNameShort} ${targetDay}, ${targetYear}`;
+
+  let currentMonthYearInSelector = await page.locator('nb-calendar-view-mode').textContent();
+
+  expect(currentMonthYearInSelector).toEqual(' January 2026 ');
+
+  while(!currentMonthYearInSelector.includes(targetDateInSelector)) {
+    await page.locator('nb-calendar-pageable-navigation [data-name="chevron-right"]').click();
+    currentMonthYearInSelector = await page.locator('nb-calendar-view-mode').textContent();
+  }
+
+  await page.locator('[class="day-cell ng-star-inserted"]').getByText(targetDay, {exact: true}).click();
+  await expect(calendarInputField).toHaveValue(targetDateToAssert);
+});
