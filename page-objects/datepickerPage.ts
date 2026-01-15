@@ -1,11 +1,7 @@
 import {expect, Page} from '@playwright/test'
+import {HelperBase} from "./helperBase";
 
-export class DatepickerPage {
-  readonly page: Page;
-
-  constructor(page: Page) {
-    this.page = page;
-  }
+export class DatepickerPage extends HelperBase {
 
   async selectCommonDatePickerDateFromToday(numberOfDaysFromToday: number) {
     const calendarInputField = this.page.getByPlaceholder('Form Picker');
