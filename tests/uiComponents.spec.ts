@@ -1,16 +1,22 @@
 import { expect, test } from '@playwright/test'
 
 test.beforeEach(async({page}) => {
-    await page.goto('http://localhost:4200/');
+    await page.goto('/');
 });
 
 test.describe('Form layouts page', () => {
+    //test.describe.configure({retries: 2});
+
     test.beforeEach(async({page}) => {
         await page.getByText('Forms').click();
         await page.getByText('Form Layouts').click();
     });
 
-    test('input fields', async({page}) => {
+    test('input fields', async({page}, testInfo) => {
+        if(testInfo.retry) {
+          //do sth
+        }
+
         const usingTheGridEmailInput = page.locator('nb-card', {hasText: "Using the Grid"}).getByRole('textbox', {name: "Email"});
         await usingTheGridEmailInput.fill('test@test.com');
         await usingTheGridEmailInput.clear();

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test.beforeEach(async({page}, testInfo) => {
-    await page.goto('http://uitestingplayground.com/ajax');
+    await page.goto(process.env.URL);
     await page.getByText('Button Triggering AJAX Request').click();
     testInfo.setTimeout(testInfo.timeout + 2000);
 });

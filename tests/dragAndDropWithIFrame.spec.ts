@@ -1,7 +1,8 @@
-import {expect, test} from "@playwright/test";
+import {expect} from "@playwright/test";
+import {test} from '../test-options';
 
-test('drag and drop in iframes', async({page}) => {
-  await page.goto('https://www.globalsqa.com/demo-site/draganddrop/');
+test('drag and drop in iframes', async({page, globalsQaURL}) => {
+  await page.goto(globalsQaURL);
 
   await page.locator('.fc-button-label').getByText('Consent').click();
 

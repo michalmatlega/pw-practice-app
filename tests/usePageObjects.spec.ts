@@ -1,11 +1,13 @@
-import { expect, test } from '@playwright/test'
-import { NavigationPage } from "../page-objects/navigationPage"
-import {FormLayoutsPage} from "../page-objects/formLayoutsPage";
-import {DatepickerPage} from "../page-objects/datepickerPage";
+import { test } from '@playwright/test'
 import {PageManager} from "../page-objects/pageManager";
+import { faker } from '@faker-js/faker';
 
 test.beforeEach(async({page}) => {
-  await page.goto('http://localhost:4200/');
+  await page.goto('/');
+});
+
+test.afterEach(async({page}) => {
+  //await page.pause();
 });
 
 test('navigate to form page', async ({page}) => {
@@ -17,11 +19,18 @@ test('navigate to form page', async ({page}) => {
   await pm.navigateTo().tooltipPage();
 })
 
-test('fill the forms', async ({page}) => {
+test('parametrized methods', async ({page}) => {
   const pm = new PageManager(page);
+  const randomFullName = faker.person.fullName();
+  const randomEmail = `${randomFullName.replace(' ', '')}${faker.number.int(1000)}@test.com`;
   await pm.navigateTo().formLayoutsPage();
-  await pm.onFormLayoutsPage().submitUsingTheGridFormWithCredentialsAndSelectOption('test@test.com', 'password', 'Option 2');
-  await pm.onFormLayoutsPage().submitInlineFormWithNameEmailAndCheckbox('test@test.com', 'password', true);
+  await pm.onFormLayoutsPage().submitInlineFormWithNameEmailAndCheckbox(randomFullName, randomEmail, true);
+  await pm.onFormLayoutsPage().submitUsingTheGridFormWithCredentialsAndSelectOption(process.env.EMAIL, process.env.PASSWORD, 'Option 2');
+  await page.waitForTimeout(500);
+  await page.screenshot({path: 'screenshots/formLayoutsPage.png'});
+  await page.locator('nb-card', {hasText: 'Inline form'}).screenshot({path: 'screenshots/inlineForm.png'});
+  const buffer = await page.screenshot();
+  console.log(buffer.toString('base64'));
 })
 
 test('fill the datepickers', async ({page}) => {
