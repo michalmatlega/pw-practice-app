@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import type { TestOptions } from './test-options';
+// @ts-ignore
+import {createArgosReporterOptions} from "@argos-ci/playwright/reporter";
 
 /**
  * Read environment variables from file.
@@ -20,6 +22,14 @@ export default defineConfig<TestOptions>({
   },
   retries: 0,  //tu ustawiasz ile razy ma sie powtorzyc w razie failu
   reporter: [
+    process.env.CI ? ["dot"] : ["list"],
+    [
+      "@argos-ci/playwright/reporter",
+      createArgosReporterOptions({
+        // Upload to Argos on CI only.
+        uploadToArgos: !!process.env.CI,
+      }),
+    ],
     ['json', {outputFile: 'test-results/jsonReport.json'}],
     ['junit', {outputFile: 'test-results/junitReport.xml'}],
     //['allure-playwright'],
@@ -29,6 +39,7 @@ export default defineConfig<TestOptions>({
     baseURL: 'http://localhost:4200',
     globalsQaURL: 'https://www.globalsqa.com/demo-site/draganddrop/',
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
     video: {
       mode: 'off',
       size: {width: 1920, height: 1080}
