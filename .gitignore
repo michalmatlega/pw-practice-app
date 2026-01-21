@@ -51,3 +51,8 @@ node_modules/
 
 screenshots/
 .env
+
+allure-results/
+allure-report/
+
+tests/*/

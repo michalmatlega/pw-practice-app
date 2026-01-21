@@ -4,8 +4,9 @@ test.beforeEach(async({page}) => {
     await page.goto('/');
 });
 
-test.describe('Form layouts page', () => {
+test.describe.only('Form layouts page', () => {
     //test.describe.configure({retries: 2});
+    test.describe.configure({mode: 'serial'});
 
     test.beforeEach(async({page}) => {
         await page.getByText('Forms').click();
@@ -45,6 +46,17 @@ test.describe('Form layouts page', () => {
         await radioOption2.check({force: true});
         expect(await radioOption1.isChecked()).toBeFalsy();
         expect(await radioOption2.isChecked()).toBeTruthy();
+    });
+
+    test.only('radio buttons visual test', async({page}) => {
+      const usingTheGridForm = page.locator('nb-card', {hasText: "Using the Grid"});
+
+      // await usingTheGridForm.getByLabel('Option 1').check({force: true});
+      const radioOption1 = usingTheGridForm.getByRole('radio', {name: "Option 1"});
+      const radioOption2 = usingTheGridForm.getByRole('radio', {name: "Option 2"});
+
+      await radioOption1.check({force: true});    //musi byc force bo .visually-hidden wiec jest ukryty
+      await expect(usingTheGridForm).toHaveScreenshot({maxDiffPixels: 10});
     });
 
 

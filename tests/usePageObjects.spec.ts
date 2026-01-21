@@ -29,8 +29,8 @@ test('parametrized methods', async ({page}) => {
   await page.waitForTimeout(500);
   await page.screenshot({path: 'screenshots/formLayoutsPage.png'});
   await page.locator('nb-card', {hasText: 'Inline form'}).screenshot({path: 'screenshots/inlineForm.png'});
-  const buffer = await page.screenshot();
-  console.log(buffer.toString('base64'));
+  // const buffer = await page.screenshot();
+  // console.log(buffer.toString('base64'));
 })
 
 test('fill the datepickers', async ({page}) => {
@@ -39,3 +39,10 @@ test('fill the datepickers', async ({page}) => {
   await pm.onDatepickerPage().selectCommonDatePickerDateFromToday(10);
   await pm.onDatepickerPage().selectDatePickerWithRangeFromToday(3,15);
 })
+
+test.only('testing with argos CI', async ({page}) => {
+  const pm = new PageManager(page);
+  await pm.navigateTo().formLayoutsPage();
+  await pm.navigateTo().datepickerPage();
+})
+
